@@ -50,5 +50,5 @@ jobs:
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
             echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
             docker pull jeongmo02/ecommerce-backend:latest
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d
