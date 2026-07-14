@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ecommerce-backend
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/ecommerce_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 1800000
+  refresh-token-expiration: 1209600000
