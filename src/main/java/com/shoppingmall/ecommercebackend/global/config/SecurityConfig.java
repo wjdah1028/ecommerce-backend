@@ -1,5 +1,6 @@
 package com.shoppingmall.ecommercebackend.global.config;
 
+import com.shoppingmall.ecommercebackend.global.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -23,12 +25,18 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // CorsConfig에서 작성한 CORS 설정을 Spring Security에 연결
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
+                // JWT 기반 API 서버에서는 CSRF 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // 서버에 로그인 상태를 저장하지 않는 Stateless 방식
                 .sessionManagement(
                         session ->
                                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -38,12 +46,14 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                                         .permitAll()
-                                        .requestMatchers("/api/auth/**", "/api/users")
+                                        .requestMatchers(HttpMethod.POST, "/api/users")
                                         .permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/api/posts/**")
+                                        .requestMatchers(HttpMethod.POST, "/api/auth/login")
                                         .permitAll()
                                         .anyRequest()
-                                        .authenticated());
+                                        .authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
