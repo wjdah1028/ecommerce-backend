@@ -5,6 +5,7 @@ import com.shoppingmall.ecommercebackend.domain.user.dto.response.SignUpResponse
 import com.shoppingmall.ecommercebackend.domain.user.dto.response.UserInfoResponse;
 import com.shoppingmall.ecommercebackend.domain.user.entity.UserEntity;
 import com.shoppingmall.ecommercebackend.domain.user.exception.UserErrorCode;
+import com.shoppingmall.ecommercebackend.domain.user.repository.SocialAccountRepository;
 import com.shoppingmall.ecommercebackend.domain.user.repository.UserRepository;
 import com.shoppingmall.ecommercebackend.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SocialAccountRepository socialAccountRepository;
 
     // 회원가입
     @Transactional
@@ -88,5 +90,23 @@ public class UserService {
                 .nickname(user.getNickname())
                 .role(user.getRole())
                 .build();
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void deleteUser(Long userId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // SocialEntity 삭제
+        socialAccountRepository.deleteByUser(user);
+
+        // User 삭제
+        userRepository.deleteById(userId);
+
+        // 회원 탈퇴 성공하면 로그 출력
+        log.info("[UserService] 회원 삭제 성공: userId={}", userId);
     }
 }
