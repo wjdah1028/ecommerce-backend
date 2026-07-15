@@ -1,6 +1,10 @@
 package com.shoppingmall.ecommercebackend.global.config;
 
+import com.shoppingmall.ecommercebackend.domain.auth.service.OAuth2UserService;
+import com.shoppingmall.ecommercebackend.global.security.CookieOAuth2AuthorizationRequestRepository;
 import com.shoppingmall.ecommercebackend.global.security.JwtAuthenticationFilter;
+import com.shoppingmall.ecommercebackend.global.security.OAuth2FailureHandler;
+import com.shoppingmall.ecommercebackend.global.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +30,10 @@ public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final OAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -50,8 +58,19 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(HttpMethod.POST, "/api/auth/login")
                                         .permitAll()
+                                        .requestMatchers("/oauth2/**", "/login/oauth2/**")
+                                        .permitAll()
+                                        .requestMatchers("/auth/callback", "/auth/error")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint -> endpoint
+                                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository))
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
