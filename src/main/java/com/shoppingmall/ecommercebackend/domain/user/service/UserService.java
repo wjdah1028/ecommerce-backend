@@ -2,6 +2,7 @@ package com.shoppingmall.ecommercebackend.domain.user.service;
 
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.SignUpRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.response.SignUpResponse;
+import com.shoppingmall.ecommercebackend.domain.user.dto.response.UserInfoResponse;
 import com.shoppingmall.ecommercebackend.domain.user.entity.UserEntity;
 import com.shoppingmall.ecommercebackend.domain.user.exception.UserErrorCode;
 import com.shoppingmall.ecommercebackend.domain.user.repository.UserRepository;
@@ -68,6 +69,24 @@ public class UserService {
                 .nickname(savedUser.getNickname())
                 .role(savedUser.getRole())
                 .createdAt(savedUser.getCreatedAt())
+                .build();
+    }
+
+    // 내 정보 조회
+    public UserInfoResponse userInfo(Long userId) {
+
+        // 사용자 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 응답 세팅
+        return UserInfoResponse.builder()
+                .userId(user.getUserId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .nickname(user.getNickname())
+                .role(user.getRole())
                 .build();
     }
 }
