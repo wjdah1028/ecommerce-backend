@@ -37,8 +37,8 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-success-url: https://api.kimjeongmo.shop/auth/callback
-failure-url: https://api.kimjeongmo.shop/auth/error
+success-url: https://api.kimjeongmo.shop/auth/callback # 프론트 연결시 성공하면 로그인 후 화면 url로 변경
+failure-url: https://api.kimjeongmo.shop/auth/error # 프론트 연결시 실패하면 나오는 화면 url로 변경
 
 cors:
   allowed-origins: http://localhost:3000,http://localhost:5173,https://api.kimjeongmo.shop
