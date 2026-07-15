@@ -15,7 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    @Value("${failure-url}")
+    @Value("${failure-url}") // 프론트 연결 후 URL 변경
     private String failureUrl;
 
     @Override
