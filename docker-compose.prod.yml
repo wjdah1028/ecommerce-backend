@@ -21,6 +21,9 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      OAUTH2_REDIRECT_URI: ${OAUTH2_REDIRECT_URI}
     depends_on:
       mysql:
         condition: service_healthy
