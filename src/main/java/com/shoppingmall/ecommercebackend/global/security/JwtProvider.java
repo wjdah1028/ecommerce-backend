@@ -78,4 +78,19 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
+    public String createAccessToken(Long userId) {
+
+        Date now = new Date();
+        Date expiredAt = new Date(now.getTime() + accessTokenExpiration);
+
+        // Access Token 생성
+        return Jwts.builder()
+                .subject(String.valueOf(userId)) // 토큰 주인 식별값
+                .claim("type", TOKEN_TYPE) // 토큰 타입
+                .issuedAt(now) // 발급 시간
+                .expiration(expiredAt) // 만료 시간
+                .signWith(secretKey) // 서명
+                .compact();
+    }
 }
