@@ -48,4 +48,17 @@ public class UserController {
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "내 정보 조회 성공", response));
     }
+
+    // 회원 삭제
+    @Operation(summary = "회원 탈퇴 API", description = "사용자 삭제하는 API")
+    @DeleteMapping("/users/me")
+    public ResponseEntity<BaseResponse<Void>> userDelete(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // service 호출
+        userService.deleteUser(userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "사용자 삭제 성공", null));
+    }
 }
