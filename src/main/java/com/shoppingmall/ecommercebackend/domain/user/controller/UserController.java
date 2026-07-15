@@ -1,6 +1,8 @@
 package com.shoppingmall.ecommercebackend.domain.user.controller;
 
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.SignUpRequest;
+import com.shoppingmall.ecommercebackend.domain.user.dto.request.UpdatePasswordRequest;
+import com.shoppingmall.ecommercebackend.domain.user.dto.request.UpdateUserRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.response.SignUpResponse;
 import com.shoppingmall.ecommercebackend.domain.user.dto.response.UserInfoResponse;
 import com.shoppingmall.ecommercebackend.domain.user.service.UserService;
@@ -60,5 +62,33 @@ public class UserController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "사용자 삭제 성공", null));
+    }
+
+    // 사용자 정보 수정
+    @Operation(summary = "사용자 정보 수정 API", description = "비밀번호를 제외한 사용자 정보를 수정하는 API")
+    @PutMapping("/users/me")
+    public ResponseEntity<BaseResponse<Void>> userUpdateInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UpdateUserRequest request) {
+
+        // service 호출
+        userService.updateUserInfo(userDetails.getUserId(), request);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "사용자 정보 수정 성공", null));
+    }
+
+    // 비밀번호 변경
+    @Operation(summary = "비밀번호 변경 API", description = "사용자가 비밀번호를 변경하는 API")
+    @PutMapping("/users/password")
+    public ResponseEntity<BaseResponse<Void>> userUpdatePassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UpdatePasswordRequest request) {
+
+        // service 호출
+        userService.updatePassword(userDetails.getUserId(), request);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "비밀번호 변경 성공", null));
     }
 }

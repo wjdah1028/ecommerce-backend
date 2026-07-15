@@ -38,4 +38,15 @@ public class UserEntity extends BaseTimeEntity {
     @Column(nullable = false)
     @Builder.Default // Builder로 만들게 되면 기본값을 설정해주는 어노테이션
     private Role role = Role.BUYER;
+
+    // 사용자 정보 수정(비밀번호 제외)
+    public void updateUserInfo(String name, String nickname) {
+        this.name = name;
+        this.nickname = nickname;
+    }
+
+    // 비밀번호 수정
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
