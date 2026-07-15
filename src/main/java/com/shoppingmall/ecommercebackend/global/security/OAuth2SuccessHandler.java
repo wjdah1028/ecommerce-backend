@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${success-url}")
+    @Value("${success-url}") // 프론트 연결후 URL 변경
     private String successUrl;
     private final JwtProvider jwtProvider;
 
