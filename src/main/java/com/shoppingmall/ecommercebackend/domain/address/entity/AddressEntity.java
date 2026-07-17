@@ -42,4 +42,9 @@ public class AddressEntity extends BaseTimeEntity {
     @Builder.Default
     @Column(nullable = false)
     private boolean defaultAddress = false; // 기본 배송지 여부(기본값은 false)
+
+    // 기본 배송지 설정 메서드
+    public void updateDefaultAddress(boolean defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
 }

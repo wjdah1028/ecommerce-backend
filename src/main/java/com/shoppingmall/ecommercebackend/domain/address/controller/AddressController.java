@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +34,19 @@ public class AddressController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(201, "주소 등록 성공", response));
+    }
+
+    // 기본 배송지 등록(변경)
+    @Operation(summary = "기본 배송지 등록 API", description = "기본 배송지를 설정하고 싶을때 사용하는 API(false -> true로 변경)")
+    @PutMapping("/addresses/{address-id}/defaultAddresses")
+    public ResponseEntity<BaseResponse<Void>> defaultAddresses(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("address-id") Long addressId) {
+
+        // service 호출
+        addressService.updateDefaultAddress(addressId, userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "기본 배송지 변경 성공", null));
     }
 }
