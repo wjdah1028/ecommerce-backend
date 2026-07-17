@@ -11,6 +11,7 @@ import com.shoppingmall.ecommercebackend.domain.user.repository.UserRepository;
 import com.shoppingmall.ecommercebackend.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,5 +66,40 @@ public class AddressService {
                 .defaultAddress(savedAddress.isDefaultAddress())
                 .createdAt(savedAddress.getCreatedAt())
                 .build();
+    }
+
+    // 기본 배송지 설정
+    @Transactional
+    public void updateDefaultAddress(Long addressId, Long userId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 주소가 존재하는지 조회
+        AddressEntity address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new CustomException(AddressErrorCode.ADDRESS_NOT_FOUND));
+
+        // 해당 주소가 본인의 주소인지 확인
+        if (!address.getUser().getUserId().equals(userId)) {
+            log.warn("[AddressService] 등록되지 않은 주소입니다: addressId= {}", addressId);
+            throw new CustomException(AddressErrorCode.ADDRESS_NOT_FOUND);
+        }
+
+        // 기본 배송지로 되어있던 배송지를 다시 등록할때 예외 출력
+        if (address.isDefaultAddress()) {
+            log.warn("[AddressService] 등록된 기본 배송지입니다: addressId= {}", addressId);
+            throw new CustomException(AddressErrorCode.DEFAULT_ADDRESS_REGISTER);
+        }
+
+        // 기존 기본 배송지가 있으면 false로 변경
+        addressRepository.findByUserAndDefaultAddress(user, true)
+                .ifPresent(existing -> existing.updateDefaultAddress(false));
+
+        // 주소를 기본 배송지로 등록
+        address.updateDefaultAddress(true);
+
+        // 로그 출력
+        log.info("[AddressService] 기본 배송지 등록 성공: addressId= {}", addressId);
     }
 }
