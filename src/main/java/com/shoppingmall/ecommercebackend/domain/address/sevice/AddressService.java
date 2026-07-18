@@ -1,8 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.address.sevice;
 
 import com.shoppingmall.ecommercebackend.domain.address.dto.request.AddressRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.address.dto.request.AddressUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressListResponse;
 import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressRegisterResponse;
+import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.address.entity.AddressEntity;
 import com.shoppingmall.ecommercebackend.domain.address.exception.AddressErrorCode;
 import com.shoppingmall.ecommercebackend.domain.address.repository.AddressRepository;
@@ -158,5 +160,48 @@ public class AddressService {
 
         // 로그 츨력
         log.info("[AddressService] 주소 삭제 성공: addressId= {}", addressId);
+    }
+
+    // 주소 수정
+    @Transactional
+    public AddressUpdateResponse updateAddress(Long addressId, Long userId, AddressUpdateRequest request) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 주소가 존재하는지 조회
+        AddressEntity address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new CustomException(AddressErrorCode.ADDRESS_NOT_FOUND));
+
+        // 로그인한 사용자가 등록한 주소가 맞는지 조회
+        if (!address.getUser().getUserId().equals(userId)) {
+            log.warn("[AddressService] 등록된 주소가 아닙니다. userId= {}", userId);
+            throw new CustomException(AddressErrorCode.ADDRESS_NOT_FOUND);
+        }
+
+        // 주소 수정
+        address.updateAddress(
+                request.getFirstAddress(),
+                request.getSecondAddress(),
+                request.getLastAddress(),
+                request.getAddressDetail(),
+                request.getZipCode()
+        );
+
+        // 로그 출력
+        log.info("[AddressService] 주소 수정 성공: addressId= {}", addressId);
+
+        return AddressUpdateResponse.builder()
+                .addressId(address.getAddressId())
+                .userId(address.getUser().getUserId())
+                .firstAddress(address.getFirstAddress())
+                .secondAddress(address.getSecondAddress())
+                .lastAddress(address.getLastAddress())
+                .addressDetail(address.getAddressDetail())
+                .zipCode(address.getZipCode())
+                .defaultAddress(address.isDefaultAddress())
+                .updatedAt(address.getModifiedAt())
+                .build();
     }
 }
