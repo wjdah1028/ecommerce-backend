@@ -1,8 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.address.controller;
 
 import com.shoppingmall.ecommercebackend.domain.address.dto.request.AddressRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.address.dto.request.AddressUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressListResponse;
 import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressRegisterResponse;
+import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.address.sevice.AddressService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
 import com.shoppingmall.ecommercebackend.global.security.CustomUserDetails;
@@ -78,5 +80,20 @@ public class AddressController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "주소 삭제 성공", null));
+    }
+
+    // 주소 수정
+    @Operation(summary = "주소 수정 API", description = "사용자가 본인의 주소를 수정하는 API")
+    @PutMapping("/addresses/{address-id}")
+    public ResponseEntity<BaseResponse<AddressUpdateResponse>> updateAddress(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("address-id") Long addressId,
+            @Valid @RequestBody AddressUpdateRequest request) {
+
+        // service 호출
+        AddressUpdateResponse response = addressService.updateAddress(addressId, userDetails.getUserId(), request);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "주소 수정 성공", response));
     }
 }

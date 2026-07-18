@@ -47,4 +47,13 @@ public class AddressEntity extends BaseTimeEntity {
     public void updateDefaultAddress(boolean defaultAddress) {
         this.defaultAddress = defaultAddress;
     }
+
+    // 배송지 수정 메서드
+    public void updateAddress(String firstAddress, String secondAddress, String lastAddress, String addressDetail, String zipCode) {
+        this.firstAddress = firstAddress;
+        this.secondAddress = secondAddress;
+        this.lastAddress = lastAddress;
+        this.addressDetail = addressDetail;
+        this.zipCode = zipCode;
+    }
 }
