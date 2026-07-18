@@ -1,0 +1,37 @@
+package com.shoppingmall.ecommercebackend.domain.address.dto.response;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(title = "주소 목록 조회 응답 dto", description = "사용자가 주소 목록을 조회할때 서버가 반환하는 데이터")
+public class AddressListResponse {
+
+    @Schema(description = "주소 고유번호", example = "1")
+    private Long addressId;
+
+    @Schema(description = "사용자 고유번호", example = "1")
+    private Long userId;
+
+    @Schema(description = "주소(시)", example = "서울특별시")
+    private String firstAddress;
+
+    @Schema(description = "주소(구)", example = "성북구")
+    private String secondAddress;
+
+    @Schema(description = "주소(마지막)", example = "서경로 100")
+    private String lastAddress;
+
+    @Schema(description = "상세 주소", example = "501호")
+    private String addressDetail;
+
+    @Schema(description = "우편 번호", example = "111111")
+    private String zipCode;
+
+    @Schema(description = "기본 배송지 여부", example = "true")
+    private boolean defaultAddress;
+}

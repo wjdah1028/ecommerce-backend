@@ -1,6 +1,7 @@
 package com.shoppingmall.ecommercebackend.domain.address.sevice;
 
 import com.shoppingmall.ecommercebackend.domain.address.dto.request.AddressRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressListResponse;
 import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.address.entity.AddressEntity;
 import com.shoppingmall.ecommercebackend.domain.address.exception.AddressErrorCode;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -101,5 +105,33 @@ public class AddressService {
 
         // 로그 출력
         log.info("[AddressService] 기본 배송지 등록 성공: addressId= {}", addressId);
+    }
+
+    // 주소 목록 조회
+    public List<AddressListResponse> getAddressList(Long userId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 응답 세팅
+        List<AddressListResponse> list = new ArrayList<>();
+        for (AddressEntity address : addressRepository.findAllByUser(user)) {
+            list.add(AddressListResponse.builder()
+                    .addressId(address.getAddressId())
+                    .userId(address.getUser().getUserId())
+                    .firstAddress(address.getFirstAddress())
+                    .secondAddress(address.getSecondAddress())
+                    .lastAddress(address.getLastAddress())
+                    .addressDetail(address.getAddressDetail())
+                    .zipCode(address.getZipCode())
+                    .defaultAddress(address.isDefaultAddress())
+                    .build());
+        }
+
+        // 로그 출력
+        log.info("[AddressService] 주소 목록 조회 성공: userId= {}", userId);
+
+        return list;
     }
 }

@@ -1,6 +1,7 @@
 package com.shoppingmall.ecommercebackend.domain.address.controller;
 
 import com.shoppingmall.ecommercebackend.domain.address.dto.request.AddressRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressListResponse;
 import com.shoppingmall.ecommercebackend.domain.address.dto.response.AddressRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.address.sevice.AddressService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,5 +51,18 @@ public class AddressController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "기본 배송지 변경 성공", null));
+    }
+
+    // 주소 목록 조회
+    @Operation(summary = "주소 목록 조회 API", description = "사용자의 주소 목록 리스트를 조회하는 API")
+    @GetMapping("/addresses")
+    public ResponseEntity<BaseResponse<List<AddressListResponse>>> addressesList(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // service 호출
+        List<AddressListResponse> response = addressService.getAddressList(userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "주소 목록 조회 성공", response));
     }
 }
