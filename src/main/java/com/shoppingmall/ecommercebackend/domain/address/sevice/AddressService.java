@@ -134,4 +134,29 @@ public class AddressService {
 
         return list;
     }
+
+    // 주소 삭제
+    @Transactional
+    public void deleteAddress(Long addressId, Long userId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 주소가 존재하는지 조회
+        AddressEntity address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new CustomException(AddressErrorCode.ADDRESS_NOT_FOUND));
+
+        // 사용자 본인의 주소인지 확인
+        if (!address.getUser().getUserId().equals(userId)) {
+            log.warn("[AddressService] 사용자 본인의 주소와 일치하지 않습니다. userId= {}", userId);
+            throw new CustomException(AddressErrorCode.ADDRESS_NOT_FOUND);
+        }
+
+        // 주소 삭제
+        addressRepository.delete(address);
+
+        // 로그 츨력
+        log.info("[AddressService] 주소 삭제 성공: addressId= {}", addressId);
+    }
 }
