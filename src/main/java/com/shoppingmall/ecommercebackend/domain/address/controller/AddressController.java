@@ -65,4 +65,18 @@ public class AddressController {
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "주소 목록 조회 성공", response));
     }
+
+    // 주소 삭제
+    @Operation(summary = "주소 삭제 API", description = "사용자가 본인의 주소를 삭제하는 API")
+    @DeleteMapping("/addresses/{address-id}")
+    public ResponseEntity<BaseResponse<Void>> deleteAddress(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("address-id") Long addressId) {
+
+        // service 호출
+        addressService.deleteAddress(addressId, userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "주소 삭제 성공", null));
+    }
 }
