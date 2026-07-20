@@ -1,8 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.league.controller;
 
 import com.shoppingmall.ecommercebackend.domain.league.dto.request.LeagueRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.league.dto.request.LeagueUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.league.service.LeagueService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
 import com.shoppingmall.ecommercebackend.global.security.CustomUserDetails;
@@ -50,5 +52,20 @@ public class LeagueController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그 목록 조회 성공", response));
+    }
+
+    // 리그 수정
+    @Operation(summary = "리그 수정 API", description = "관리자가 리그 이름을 수정하는 API")
+    @PutMapping("/leagues/{league-id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseResponse<LeagueUpdateResponse>> leagueUpdate(
+            @Valid @RequestBody LeagueUpdateRequest request,
+            @PathVariable("league-id") Long leagueId) {
+
+        // service 호출
+        LeagueUpdateResponse response = leagueService.updateLeague(leagueId, request);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그 수정 성공", response));
     }
 }
