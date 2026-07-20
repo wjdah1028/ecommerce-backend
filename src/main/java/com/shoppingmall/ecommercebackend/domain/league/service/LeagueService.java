@@ -1,8 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.league.service;
 
 import com.shoppingmall.ecommercebackend.domain.league.dto.request.LeagueRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.league.dto.request.LeagueUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.league.entity.LeagueEntity;
 import com.shoppingmall.ecommercebackend.domain.league.exception.LeagueErrorCode;
 import com.shoppingmall.ecommercebackend.domain.league.repository.LeagueRepository;
@@ -71,5 +73,27 @@ public class LeagueService {
         log.info("[LeagueService] 리그 목록 조회 성공");
 
         return list;
+    }
+
+    // 리그 수정
+    @Transactional
+    public LeagueUpdateResponse updateLeague(Long leagueId, LeagueUpdateRequest request) {
+
+        // 리그가 존재하는지 조회
+        LeagueEntity league = leagueRepository.findById(leagueId)
+                .orElseThrow(() -> new CustomException(LeagueErrorCode.LEAGUE_NOT_FOUND));
+
+        // 리그 수정
+        league.updateLeague(request.getLeagueName());
+
+        // 로그 출력
+        log.info("[LeagueService] 리그 수정 성공: leagueId= {}", league.getLeagueId());
+
+        // 응답 세팅
+        return LeagueUpdateResponse.builder()
+                .leagueId(league.getLeagueId())
+                .leagueName(league.getLeagueName())
+                .modifiedAt(league.getModifiedAt())
+                .build();
     }
 }
