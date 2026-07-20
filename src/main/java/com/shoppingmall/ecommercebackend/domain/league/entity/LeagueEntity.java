@@ -21,4 +21,9 @@ public class LeagueEntity extends BaseTimeEntity {
 
     @Column(nullable = false, length = 100)
     private String leagueName;
+
+    // 리그 수정 메서드
+    public void updateLeague(String leagueName) {
+        this.leagueName = leagueName;
+    }
 }
