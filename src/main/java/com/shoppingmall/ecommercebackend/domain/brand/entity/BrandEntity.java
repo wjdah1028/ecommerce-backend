@@ -21,4 +21,9 @@ public class BrandEntity extends BaseTimeEntity {
 
     @Column(nullable = false, length = 100)
     private String brandName;
+
+    // 브랜드 수정 메서드
+    public void updateBrand(String brandName) {
+        this.brandName = brandName;
+    }
 }
