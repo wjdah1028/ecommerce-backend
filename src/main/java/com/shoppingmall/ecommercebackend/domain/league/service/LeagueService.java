@@ -8,9 +8,6 @@ import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueUpdate
 import com.shoppingmall.ecommercebackend.domain.league.entity.LeagueEntity;
 import com.shoppingmall.ecommercebackend.domain.league.exception.LeagueErrorCode;
 import com.shoppingmall.ecommercebackend.domain.league.repository.LeagueRepository;
-import com.shoppingmall.ecommercebackend.domain.user.entity.UserEntity;
-import com.shoppingmall.ecommercebackend.domain.user.exception.UserErrorCode;
-import com.shoppingmall.ecommercebackend.domain.user.repository.UserRepository;
 import com.shoppingmall.ecommercebackend.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +24,6 @@ import java.util.List;
 public class LeagueService {
 
     private final LeagueRepository leagueRepository;
-    private final UserRepository userRepository;
 
     // 리그 등록
     @Transactional
@@ -95,5 +91,20 @@ public class LeagueService {
                 .leagueName(league.getLeagueName())
                 .modifiedAt(league.getModifiedAt())
                 .build();
+    }
+
+    // 리그 삭제
+    @Transactional
+    public void deleteLeague(Long leagueId) {
+
+        // 리그가 존재하는지 조회
+        LeagueEntity league = leagueRepository.findById(leagueId)
+                .orElseThrow(() -> new CustomException(LeagueErrorCode.LEAGUE_NOT_FOUND));
+
+        // 리그 삭제
+        leagueRepository.delete(league);
+
+        // 로그 출력
+        log.info("[LeagueService] 리그 삭제 성공: leagueId= {}", league.getLeagueId());
     }
 }

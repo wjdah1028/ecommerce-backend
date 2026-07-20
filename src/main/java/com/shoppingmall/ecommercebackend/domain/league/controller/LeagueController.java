@@ -68,4 +68,18 @@ public class LeagueController {
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그 수정 성공", response));
     }
+
+    // 리그 삭제
+    @Operation(summary = "리그 삭제 API", description = "관리자가 리그를 삭제하는 API")
+    @DeleteMapping("/leagues/{league-id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseResponse<Void>> deleteLeague(
+            @PathVariable("league-id") Long leagueId) {
+
+        // service 호출
+        leagueService.deleteLeague(leagueId);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그 삭제 성공", null));
+    }
 }
