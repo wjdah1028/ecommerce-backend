@@ -1,5 +1,6 @@
 package com.shoppingmall.ecommercebackend.domain.user.controller;
 
+import com.shoppingmall.ecommercebackend.domain.user.dto.request.SellerSignUpRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.SignUpRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.UpdatePasswordRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.UpdateUserRequest;
@@ -90,5 +91,18 @@ public class UserController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "비밀번호 변경 성공", null));
+    }
+
+    // 판매자 회원가입
+    @Operation(summary = "판매자 전용 회원가입 API", description = "판매자가 회원가입하는 API")
+    @PostMapping("/sellers")
+    public ResponseEntity<BaseResponse<SignUpResponse>> sellerSignUp(
+            @Valid @RequestBody SellerSignUpRequest request) {
+
+        // service 호출
+        SignUpResponse response = userService.sellerSignUp(request);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(201, "판매자 회원가입 성공", response));
     }
 }
