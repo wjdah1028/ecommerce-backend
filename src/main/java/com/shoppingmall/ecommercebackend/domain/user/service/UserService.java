@@ -1,11 +1,13 @@
 package com.shoppingmall.ecommercebackend.domain.user.service;
 
 import com.nimbusds.openid.connect.sdk.UserInfoRequest;
+import com.shoppingmall.ecommercebackend.domain.user.dto.request.SellerSignUpRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.SignUpRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.UpdatePasswordRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.request.UpdateUserRequest;
 import com.shoppingmall.ecommercebackend.domain.user.dto.response.SignUpResponse;
 import com.shoppingmall.ecommercebackend.domain.user.dto.response.UserInfoResponse;
+import com.shoppingmall.ecommercebackend.domain.user.entity.Role;
 import com.shoppingmall.ecommercebackend.domain.user.entity.UserEntity;
 import com.shoppingmall.ecommercebackend.domain.user.exception.UserErrorCode;
 import com.shoppingmall.ecommercebackend.domain.user.repository.SocialAccountRepository;
@@ -160,5 +162,56 @@ public class UserService {
 
         // 비밀번호 변경 성공 시 로그 출력
         log.info("[UserService] 비밀번호 변경 성공: userId={}", userId);
+    }
+
+    // 판매자 회원가입
+    @Transactional
+    public SignUpResponse sellerSignUp(SellerSignUpRequest request) {
+
+        // 중복된 이메일인지 조회
+        if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("[UseService] 중복된 이메일입니다: email={}", request.getEmail());
+            throw new CustomException(UserErrorCode.USER_EMAIL_DUPLICATE);
+        }
+
+        // 중복된 전화번호인지 조회
+        if(userRepository.existsByPhone(request.getPhone())){
+            log.warn("[UserService] 중복된 전화번호입니다: phone={}", request.getPhone());
+            throw new CustomException(UserErrorCode.USER_PHONE_DUPLICATE);
+        }
+
+        // 중복된 닉네임인지 조회
+        if(userRepository.existsByNickname(request.getNickname())){
+            log.warn("[UserService] 중복된 닉네임입니다: nickname={}", request.getNickname());
+            throw new CustomException(UserErrorCode.USER_NICKNAME_DUPLICATE);
+        }
+
+        // 사용자 객체 생성
+        UserEntity user =
+                UserEntity.builder()
+                        .name(request.getName())
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .phone(request.getPhone())
+                        .nickname(request.getNickname())
+                        .role(Role.SELLER)
+                        .build();
+
+        // DB 저장
+        UserEntity savedUser = userRepository.save(user);
+
+        // 로그 출력
+        log.info("[UserService] 판매자 회원가입 성공: userId={}", savedUser.getUserId());
+
+        // 응답 세팅
+        return SignUpResponse.builder()
+                .userId(savedUser.getUserId())
+                .name(savedUser.getName())
+                .email(savedUser.getEmail())
+                .phone(savedUser.getPhone())
+                .nickname(savedUser.getNickname())
+                .role(savedUser.getRole())
+                .createdAt(savedUser.getCreatedAt())
+                .build();
     }
 }
