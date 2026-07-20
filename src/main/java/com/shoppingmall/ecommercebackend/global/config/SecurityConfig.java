@@ -62,6 +62,8 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers("/auth/callback", "/auth/error")
                                         .permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/api/sellers")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated()
                 )
