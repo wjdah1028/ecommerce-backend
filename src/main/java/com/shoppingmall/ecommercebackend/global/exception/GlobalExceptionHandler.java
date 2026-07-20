@@ -3,8 +3,10 @@ package com.shoppingmall.ecommercebackend.global.exception;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
 import com.shoppingmall.ecommercebackend.global.exception.model.BaseErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -59,5 +61,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(BaseResponse.error("TOKEN400", "헤더 정보가 누락되었습니다."));
+    }
+
+    // 판매자 또는 구매자가 관리자 권한에 접근 시
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<BaseResponse<Object>> handleAuthorizationDeniedException(Exception e) {
+
+        // 로그 출력
+        log.warn("접근할 수 없는 권한입니다. {}", e.getMessage());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(BaseResponse.error("ADMIN403", "접근할 수 없는 권한입니다."));
     }
 }
