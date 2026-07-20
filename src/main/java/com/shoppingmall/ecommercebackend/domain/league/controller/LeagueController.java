@@ -7,7 +7,6 @@ import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueSearch
 import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.league.service.LeagueService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
-import com.shoppingmall.ecommercebackend.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
