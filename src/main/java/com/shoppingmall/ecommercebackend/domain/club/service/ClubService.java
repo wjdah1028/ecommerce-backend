@@ -3,6 +3,7 @@ package com.shoppingmall.ecommercebackend.domain.club.service;
 
 import com.shoppingmall.ecommercebackend.domain.club.dto.request.ClubRegisterRequest;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubRegisterResponse;
+import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubSearchResponse;
 import com.shoppingmall.ecommercebackend.domain.club.entity.ClubEntity;
 import com.shoppingmall.ecommercebackend.domain.club.exception.ClubErrorCode;
 import com.shoppingmall.ecommercebackend.domain.club.repository.ClubRepository;
@@ -14,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,5 +63,25 @@ public class ClubService {
                 .leagueName(savedClub.getLeague().getLeagueName())
                 .createdAt(savedClub.getCreatedAt())
                 .build();
+    }
+
+    // 구단 조회
+    public List<ClubSearchResponse> searchClub() {
+
+        // 응답 세팅
+        List<ClubSearchResponse> list = new ArrayList<>();
+        for (ClubEntity club : clubRepository.findAll()) {
+            list.add(ClubSearchResponse.builder()
+                    .clubId(club.getClubId())
+                    .leagueId(club.getLeague().getLeagueId())
+                    .leagueName(club.getLeague().getLeagueName())
+                    .clubName(club.getClubName())
+                    .build());
+        }
+
+        // 로그 출력
+        log.info("[ClubService] 구단 조회 성공");
+
+        return list;
     }
 }
