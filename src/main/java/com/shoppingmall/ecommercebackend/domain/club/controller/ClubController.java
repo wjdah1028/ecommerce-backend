@@ -81,4 +81,18 @@ public class ClubController {
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "구단 수정 성공", response));
     }
+
+    // 구단 삭제
+    @Operation(summary = "구단 삭제 API", description = "관리자가 구단을 삭제하는 API")
+    @DeleteMapping("/clubs/{club-id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseResponse<Void>> deleteClub(
+            @PathVariable("club-id") Long clubId) {
+
+        // service 호출
+        clubService.deleteClub(clubId);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "구단 삭제 성공", null));
+    }
 }

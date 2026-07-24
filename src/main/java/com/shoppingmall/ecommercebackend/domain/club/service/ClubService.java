@@ -139,4 +139,19 @@ public class ClubService {
                 .modifiedAt(club.getModifiedAt())
                 .build();
     }
+
+    // 구단 삭제
+    @Transactional
+    public void deleteClub(Long clubId) {
+
+        // 구단이 존재하는지 조회
+        ClubEntity club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new CustomException(ClubErrorCode.CLUB_NOT_FOUND));
+
+        // 구단 삭제
+        clubRepository.delete(club);
+
+        // 로그 출력
+        log.info("[ClubService] 구단 삭제 성공: clubId={}", clubId);
+    }
 }
