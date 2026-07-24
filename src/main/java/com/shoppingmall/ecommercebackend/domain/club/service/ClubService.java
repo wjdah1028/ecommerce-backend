@@ -2,8 +2,10 @@ package com.shoppingmall.ecommercebackend.domain.club.service;
 
 
 import com.shoppingmall.ecommercebackend.domain.club.dto.request.ClubRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.club.dto.request.ClubUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.LeagueByClubSearchResponse;
 import com.shoppingmall.ecommercebackend.domain.club.entity.ClubEntity;
 import com.shoppingmall.ecommercebackend.domain.club.exception.ClubErrorCode;
@@ -108,5 +110,33 @@ public class ClubService {
         log.info("[ClubService] 리그별 구단 조회 성공");
 
         return list;
+    }
+
+    // 구단 수정
+    @Transactional
+    public ClubUpdateResponse updateClub(ClubUpdateRequest request, Long clubId) {
+
+        // 변경한 리그가 존재하는지 조회
+        LeagueEntity league = leagueRepository.findById(request.getLeagueId())
+                .orElseThrow(() -> new CustomException(LeagueErrorCode.LEAGUE_NOT_FOUND));
+
+        // 구단이 존재하는지 조회
+        ClubEntity club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new CustomException(ClubErrorCode.CLUB_NOT_FOUND));
+
+        // 구단 수정
+        club.updateClub(league, request.getClubName());
+
+        // 로그 출력
+        log.info("[ClubService] 구단 수정 성공: clubName={}", request.getClubName());
+
+        // 응답 세팅
+        return ClubUpdateResponse.builder()
+                .leagueId(club.getLeague().getLeagueId())
+                .leagueName(club.getLeague().getLeagueName())
+                .clubId(club.getClubId())
+                .clubName(club.getClubName())
+                .modifiedAt(club.getModifiedAt())
+                .build();
     }
 }

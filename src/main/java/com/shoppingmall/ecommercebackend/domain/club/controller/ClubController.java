@@ -1,8 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.club.controller;
 
 import com.shoppingmall.ecommercebackend.domain.club.dto.request.ClubRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.club.dto.request.ClubUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.LeagueByClubSearchResponse;
 import com.shoppingmall.ecommercebackend.domain.club.service.ClubService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
@@ -63,5 +65,20 @@ public class ClubController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그별 구단 조회 성공", response));
+    }
+
+    // 구단 수정
+    @Operation(summary = "구단 수정 API", description = "관리자가 리그와 구단 이름을 수정하는 API")
+    @PutMapping("/clubs/{club-id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseResponse<ClubUpdateResponse>> updateClub(
+            @PathVariable("club-id") Long clubId,
+            @Valid @RequestBody ClubUpdateRequest request) {
+
+        // service 호출
+        ClubUpdateResponse response = clubService.updateClub(request,clubId);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "구단 수정 성공", response));
     }
 }

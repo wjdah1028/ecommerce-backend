@@ -26,4 +26,10 @@ public class ClubEntity extends BaseTimeEntity {
 
     @Column(nullable = false, length = 200)
     private String clubName;
+
+    // 구단 수정 메서드
+    public void updateClub(LeagueEntity league, String clubName) {
+        this.league = league;
+        this.clubName = clubName;
+    }
 }
