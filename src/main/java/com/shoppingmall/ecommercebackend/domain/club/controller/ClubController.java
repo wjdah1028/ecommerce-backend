@@ -3,6 +3,7 @@ package com.shoppingmall.ecommercebackend.domain.club.controller;
 import com.shoppingmall.ecommercebackend.domain.club.dto.request.ClubRegisterRequest;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubRegisterResponse;
 import com.shoppingmall.ecommercebackend.domain.club.dto.response.ClubSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.club.dto.response.LeagueByClubSearchResponse;
 import com.shoppingmall.ecommercebackend.domain.club.service.ClubService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,5 +50,18 @@ public class ClubController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "구단 조회 성공", response));
+    }
+
+    // 리그별 구단 조회
+    @Operation(summary = "리그별 구단 조회 API", description = "로그인 필요 없이 모든 사용자가 리그별로 구단을 조회하는 API")
+    @GetMapping("/{league-id}/clubs")
+    public ResponseEntity<BaseResponse<List<LeagueByClubSearchResponse>>> leagueByClubSearch(
+            @PathVariable("league-id") Long leagueId) {
+
+        // service 호출
+        List<LeagueByClubSearchResponse> response = clubService.searchLeagueByClub(leagueId);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그별 구단 조회 성공", response));
     }
 }

@@ -70,6 +70,8 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/clubs")
                                         .permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/api/*/clubs")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated()
                 )
