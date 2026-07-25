@@ -13,4 +13,7 @@ public interface ClubRepository extends JpaRepository<ClubEntity, Long> {
 
     // 리그 별 구단 조회
     List<ClubEntity> findAllByLeague(LeagueEntity league);
+
+    // 리그가 삭제될때 구단도 삭제
+    void deleteByLeague(LeagueEntity league);
 }
