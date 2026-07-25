@@ -1,5 +1,6 @@
 package com.shoppingmall.ecommercebackend.domain.league.service;
 
+import com.shoppingmall.ecommercebackend.domain.club.repository.ClubRepository;
 import com.shoppingmall.ecommercebackend.domain.league.dto.request.LeagueRegisterRequest;
 import com.shoppingmall.ecommercebackend.domain.league.dto.request.LeagueUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.league.dto.response.LeagueRegisterResponse;
@@ -24,6 +25,7 @@ import java.util.List;
 public class LeagueService {
 
     private final LeagueRepository leagueRepository;
+    private final ClubRepository clubRepository;
 
     // 리그 등록
     @Transactional
@@ -100,6 +102,9 @@ public class LeagueService {
         // 리그가 존재하는지 조회
         LeagueEntity league = leagueRepository.findById(leagueId)
                 .orElseThrow(() -> new CustomException(LeagueErrorCode.LEAGUE_NOT_FOUND));
+
+        // 구단 삭제
+        clubRepository.deleteByLeague(league);
 
         // 리그 삭제
         leagueRepository.delete(league);
