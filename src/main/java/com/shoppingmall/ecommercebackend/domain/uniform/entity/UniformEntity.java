@@ -42,4 +42,13 @@ public class UniformEntity extends BaseTimeEntity {
 
     @Column(length = 300)
     private String uniformImage;
+
+    // 유니폼 수정 메서드
+    public void uniformUpdate(String uniformName, String uniformImage, BrandEntity brand, ClubEntity club, int price) {
+        this.uniformName = uniformName;
+        this.uniformImage = uniformImage;
+        this.brand = brand;
+        this.club = club;
+        this.price = price;
+    }
 }
