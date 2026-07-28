@@ -52,6 +52,9 @@ jobs:
             echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
             echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
             echo "OAUTH2_REDIRECT_URI=${{ secrets.OAUTH2_REDIRECT_URI }}" >> .env
+            echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env
+            echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
+            echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env
             docker pull jeongmo02/ecommerce-backend:latest
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d
