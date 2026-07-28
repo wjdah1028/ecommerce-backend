@@ -216,4 +216,24 @@ public class UniformService {
                 .modifiedAt(uniform.getModifiedAt())
                 .build();
     }
+
+    // 유니폼 삭제
+    @Transactional
+    public void deleteUniform(Long uniformId, Long userId) {
+
+        // 유니폼이 존재하는지 조회
+        UniformEntity uniform = uniformRepository.findById(uniformId)
+                .orElseThrow(() -> new CustomException(UniformErrorCode.UNIFORM_NOT_FOUND));
+
+        // 판매자가 올린 유니폼인지 확인
+        if (!uniform.getUser().getUserId().equals(userId)) {
+            throw new CustomException(UniformErrorCode.UNIFORM_NOT_AUTHORITY);
+        }
+
+        // 유니폼 삭제
+        uniformRepository.delete(uniform);
+
+        // 로그 출력
+        log.info("[UniformService] 유니폼 삭제 성공: uniformId: {}", uniform.getUniformId());
+    }
 }
