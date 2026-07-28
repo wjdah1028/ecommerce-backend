@@ -1,0 +1,88 @@
+package com.shoppingmall.ecommercebackend.domain.uniform.service;
+
+import com.shoppingmall.ecommercebackend.domain.brand.entity.BrandEntity;
+import com.shoppingmall.ecommercebackend.domain.brand.exception.BrandErrorCode;
+import com.shoppingmall.ecommercebackend.domain.brand.repository.BrandRepository;
+import com.shoppingmall.ecommercebackend.domain.club.entity.ClubEntity;
+import com.shoppingmall.ecommercebackend.domain.club.exception.ClubErrorCode;
+import com.shoppingmall.ecommercebackend.domain.club.repository.ClubRepository;
+import com.shoppingmall.ecommercebackend.domain.league.repository.LeagueRepository;
+import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformRegisterResponse;
+import com.shoppingmall.ecommercebackend.domain.uniform.entity.UniformEntity;
+import com.shoppingmall.ecommercebackend.domain.uniform.exception.UniformErrorCode;
+import com.shoppingmall.ecommercebackend.domain.uniform.repository.UniformRepository;
+import com.shoppingmall.ecommercebackend.domain.user.entity.UserEntity;
+import com.shoppingmall.ecommercebackend.domain.user.exception.UserErrorCode;
+import com.shoppingmall.ecommercebackend.domain.user.repository.UserRepository;
+import com.shoppingmall.ecommercebackend.global.exception.CustomException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Slf4j
+public class UniformService {
+
+    private final UniformRepository uniformRepository;
+    private final UserRepository userRepository;
+    private final ClubRepository clubRepository;
+    private final BrandRepository brandRepository;
+
+    // 유니폼 등록
+    @Transactional
+    public UniformRegisterResponse uniformRegister(UniformRegisterRequest request, Long userId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 브랜드가 존재하는지 조회
+        BrandEntity brandEntity = brandRepository.findById(request.getBrandId())
+                .orElseThrow(() -> new CustomException(BrandErrorCode.BRAND_NOT_FOUND));
+
+        // 구단이 존재하는지 조회
+        ClubEntity clubEntity = clubRepository.findById(request.getClubId())
+                .orElseThrow(() -> new CustomException(ClubErrorCode.CLUB_NOT_FOUND));
+
+        // 유니폼이 등록됐는지 조회
+        if (uniformRepository.existsByUniformName(request.getUniformName())) {
+            log.warn("[UniformService] 등록된 유니폼 입니다: uniformName= {}", request.getUniformName());
+            throw new CustomException(UniformErrorCode.UNIFORM_DUPLICATE);
+        }
+
+        // 유니폼 객체 생성
+        UniformEntity uniform = UniformEntity.builder()
+                .uniformName(request.getUniformName())
+                .brand(brandEntity)
+                .club(clubEntity)
+                .user(user)
+                .uniformImage(request.getUniformImage())
+                .price(request.getPrice())
+                .build();
+
+        // DB 저장
+        uniformRepository.save(uniform);
+
+        // 로그 출력
+        log.info("[UniformService] 유니폼 등록에 성공했습니다: uniformName= {}", uniform.getUniformName());
+
+        // 응답 세팅
+        return UniformRegisterResponse.builder()
+                .uniformId(uniform.getUniformId())
+                .uniformName(uniform.getUniformName())
+                .brandId(uniform.getBrand().getBrandId())
+                .brandName(uniform.getBrand().getBrandName())
+                .clubId(uniform.getClub().getClubId())
+                .clubName(uniform.getClub().getClubName())
+                .leagueId(uniform.getClub().getLeague().getLeagueId())
+                .leagueName(uniform.getClub().getLeague().getLeagueName())
+                .uniformImage(uniform.getUniformImage())
+                .price(uniform.getPrice())
+                .createdAt(uniform.getCreatedAt())
+                .build();
+    }
+}
