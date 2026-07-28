@@ -24,6 +24,9 @@ services:
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       OAUTH2_REDIRECT_URI: ${OAUTH2_REDIRECT_URI}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
     depends_on:
       mysql:
         condition: service_healthy
