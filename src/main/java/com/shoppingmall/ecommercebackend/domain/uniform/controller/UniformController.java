@@ -1,10 +1,8 @@
 package com.shoppingmall.ecommercebackend.domain.uniform.controller;
 
 import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformRegisterRequest;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformByClubListResponse;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformByLeagueListResponse;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformRegisterResponse;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformUpdateRequest;
+import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.*;
 import com.shoppingmall.ecommercebackend.domain.uniform.service.UniformService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
 import com.shoppingmall.ecommercebackend.global.security.CustomUserDetails;
@@ -84,5 +82,21 @@ public class UniformController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "리그별 유니폼 목록 조회 성공", response));
+    }
+
+    // 유니폼 수정
+    @Operation(summary = "유니폼 수정 API", description = "판매자가 유니폼 수정하는 API")
+    @PutMapping("/uniforms/{uniform-id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<BaseResponse<UniformUpdateResponse>> uniformUpdate(
+            @PathVariable("uniform-id") Long uniformId,
+            @Valid @RequestBody UniformUpdateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // service 호출
+        UniformUpdateResponse response = uniformService.uniformUpdate(uniformId, request, userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "유니폼 수정 성공", response));
     }
 }

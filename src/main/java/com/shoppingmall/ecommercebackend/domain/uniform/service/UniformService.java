@@ -10,10 +10,8 @@ import com.shoppingmall.ecommercebackend.domain.league.entity.LeagueEntity;
 import com.shoppingmall.ecommercebackend.domain.league.exception.LeagueErrorCode;
 import com.shoppingmall.ecommercebackend.domain.league.repository.LeagueRepository;
 import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformRegisterRequest;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformByClubListResponse;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformByLeagueListResponse;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformRegisterResponse;
-import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.UniformSearchResponse;
+import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformUpdateRequest;
+import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.*;
 import com.shoppingmall.ecommercebackend.domain.uniform.entity.UniformEntity;
 import com.shoppingmall.ecommercebackend.domain.uniform.exception.UniformErrorCode;
 import com.shoppingmall.ecommercebackend.domain.uniform.repository.UniformRepository;
@@ -168,5 +166,54 @@ public class UniformService {
         log.info("[UniformService] 리그별 유니폼 목록 조회 성공");
 
         return list;
+    }
+
+    // 유니폼 수정
+    @Transactional
+    public UniformUpdateResponse uniformUpdate(Long uniformId, UniformUpdateRequest request, Long userId) {
+
+        // 유니폼이 존재하는지 조회
+        UniformEntity uniform = uniformRepository.findById(uniformId)
+                .orElseThrow(() -> new CustomException(UniformErrorCode.UNIFORM_NOT_FOUND));
+
+        // 브랜드가 존재하는지 조회
+        BrandEntity brand = brandRepository.findById(request.getBrandId())
+                .orElseThrow(() -> new CustomException(BrandErrorCode.BRAND_NOT_FOUND));
+
+        // 구단이 존재하는지 조회
+        ClubEntity club = clubRepository.findById(request.getClubId())
+                .orElseThrow(() -> new CustomException(ClubErrorCode.CLUB_NOT_FOUND));
+
+        // 판매자가 올린 유니폼인지 확인
+        if (!uniform.getUser().getUserId().equals(userId)) {
+            throw new CustomException(UniformErrorCode.UNIFORM_NOT_AUTHORITY);
+        }
+
+        // 유니폼 수정
+        uniform.uniformUpdate(
+                request.getUniformName(),
+                request.getUniformImage(),
+                brand,
+                club,
+                request.getPrice()
+        );
+
+        // 로그 출력
+        log.info("[UniformService] 유니폼 수정 성공: uniformName: {}", request.getUniformName());
+
+        // 응답 세팅
+        return UniformUpdateResponse.builder()
+                .uniformId(uniform.getUniformId())
+                .uniformName(uniform.getUniformName())
+                .brandId(uniform.getBrand().getBrandId())
+                .brandName(uniform.getBrand().getBrandName())
+                .clubId(uniform.getClub().getClubId())
+                .clubName(uniform.getClub().getClubName())
+                .leagueId(uniform.getClub().getLeague().getLeagueId())
+                .leagueName(uniform.getClub().getLeague().getLeagueName())
+                .uniformImage(uniform.getUniformImage())
+                .price(uniform.getPrice())
+                .modifiedAt(uniform.getModifiedAt())
+                .build();
     }
 }
