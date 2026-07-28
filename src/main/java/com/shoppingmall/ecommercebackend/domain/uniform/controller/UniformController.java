@@ -85,7 +85,7 @@ public class UniformController {
     }
 
     // 유니폼 수정
-    @Operation(summary = "유니폼 수정 API", description = "판매자가 유니폼 수정하는 API")
+    @Operation(summary = "유니폼 수정 API", description = "판매자가 본인이 등록한 특정 유니폼 정보를 수정하는 API")
     @PutMapping("/uniforms/{uniform-id}")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<BaseResponse<UniformUpdateResponse>> uniformUpdate(
@@ -98,5 +98,20 @@ public class UniformController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "유니폼 수정 성공", response));
+    }
+
+    // 유니폼 삭제
+    @Operation(summary = "유니폼 삭제 API", description = "판매자가 본인이 등록한 특정 유니폼을 삭제하는 API")
+    @DeleteMapping("/uniforms/{uniform-id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<BaseResponse<Void>> uniformDelete(
+            @PathVariable("uniform-id") Long uniformId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // service 호출
+        uniformService.deleteUniform(uniformId, userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "유니폼 삭제 성공", null));
     }
 }
