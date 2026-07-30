@@ -9,6 +9,11 @@ import com.shoppingmall.ecommercebackend.domain.club.repository.ClubRepository;
 import com.shoppingmall.ecommercebackend.domain.league.entity.LeagueEntity;
 import com.shoppingmall.ecommercebackend.domain.league.exception.LeagueErrorCode;
 import com.shoppingmall.ecommercebackend.domain.league.repository.LeagueRepository;
+import com.shoppingmall.ecommercebackend.domain.stock.dto.response.StockSizeResponse;
+import com.shoppingmall.ecommercebackend.domain.stock.entity.Size;
+import com.shoppingmall.ecommercebackend.domain.stock.entity.StockEntity;
+import com.shoppingmall.ecommercebackend.domain.stock.exception.StockErrorCode;
+import com.shoppingmall.ecommercebackend.domain.stock.repository.StockRepository;
 import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformRegisterRequest;
 import com.shoppingmall.ecommercebackend.domain.uniform.dto.request.UniformUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.uniform.dto.response.*;
@@ -27,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +45,7 @@ public class UniformService {
     private final ClubRepository clubRepository;
     private final BrandRepository brandRepository;
     private final LeagueRepository leagueRepository;
+    private final StockRepository stockRepository;
 
     // 유니폼 등록
     @Transactional
@@ -104,6 +111,15 @@ public class UniformService {
         // 로그 출력
         log.info("[UniformService] 유니폼 단건 조회 성공: uniformId= {}", uniform.getUniformId());
 
+        List<StockSizeResponse> stockSoldOut = new ArrayList<>();
+        for (Size size : Size.values()) {
+            Optional<StockEntity> stock = stockRepository.findByUniformAndSize(uniform, size);
+            stockSoldOut.add(StockSizeResponse.builder()
+                    .size(size)
+                    .soldOut(stock.isEmpty() || stock.get().getStockQuantity() == 0)
+                    .build());
+        }
+
         // 응답 세팅
         return UniformSearchResponse.builder()
                 .uniformId(uniform.getUniformId())
@@ -113,6 +129,7 @@ public class UniformService {
                 .brandName(uniform.getBrand().getBrandName())
                 .clubName(uniform.getClub().getClubName())
                 .leagueName(uniform.getClub().getLeague().getLeagueName())
+                .stockSoldOut(stockSoldOut)
                 .build();
     }
 
