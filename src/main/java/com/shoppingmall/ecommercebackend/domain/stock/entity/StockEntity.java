@@ -35,4 +35,10 @@ public class StockEntity extends BaseTimeEntity {
     public void StockPlus(int stockQuantity) {
         this.stockQuantity += stockQuantity;
     }
+
+    // 재고 수정 메서드
+    public void stockUpdate(Size size,  int stockQuantity) {
+        this.size = size;
+        this.stockQuantity = stockQuantity;
+    }
 }

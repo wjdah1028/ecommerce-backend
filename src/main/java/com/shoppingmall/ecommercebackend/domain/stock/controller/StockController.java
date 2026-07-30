@@ -1,8 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.stock.controller;
 
 import com.shoppingmall.ecommercebackend.domain.stock.dto.request.StockRegisterRequest;
+import com.shoppingmall.ecommercebackend.domain.stock.dto.request.StockUpdateRequest;
 import com.shoppingmall.ecommercebackend.domain.stock.dto.response.StockAllCountResponse;
 import com.shoppingmall.ecommercebackend.domain.stock.dto.response.StockRegisterResponse;
+import com.shoppingmall.ecommercebackend.domain.stock.dto.response.StockUpdateResponse;
 import com.shoppingmall.ecommercebackend.domain.stock.service.StockService;
 import com.shoppingmall.ecommercebackend.global.common.BaseResponse;
 import com.shoppingmall.ecommercebackend.global.security.CustomUserDetails;
@@ -55,5 +57,22 @@ public class StockController {
 
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "특정 유니폼 전체 재고 목록 조회 성공", response));
+    }
+
+    // 재고 수정
+    @Operation(summary = "재고 수정 API", description = "판매자가 등록한 유니폼의 재고를 수정하는 API")
+    @PutMapping("/{uniform-id}/stocks/{stock-id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<BaseResponse<StockUpdateResponse>> stockUpdate(
+            @Valid @RequestBody StockUpdateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("uniform-id") Long uniformId,
+            @PathVariable("stock-id") Long stockId) {
+
+        // service 호출
+        StockUpdateResponse response = stockService.stockUpdate(request, uniformId, userDetails.getUserId(), stockId);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "재고 수정 성공", response));
     }
 }
