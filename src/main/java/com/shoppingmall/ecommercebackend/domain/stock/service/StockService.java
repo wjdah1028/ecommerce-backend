@@ -155,4 +155,29 @@ public class StockService {
                 .modifiedAt(stock.getModifiedAt())
                 .build();
     }
+
+    // 재고 삭제
+    @Transactional
+    public void deleteStock(Long stockId, Long userId, Long uniformId) {
+
+        // 유니폼이 존재하는지 조회
+        UniformEntity uniform = uniformRepository.findById(uniformId)
+                .orElseThrow(() -> new CustomException(UniformErrorCode.UNIFORM_NOT_FOUND));
+
+        // 재고가 있는지 조회
+        StockEntity stock = stockRepository.findById(stockId)
+                .orElseThrow(() -> new CustomException(StockErrorCode.STOCK_NOT_FOUND));
+
+        // 판매자가 등록한 유니폼이 맞는지 조회
+        if (!uniform.getUser().getUserId().equals(userId)) {
+            log.warn("[StockService] 재고를 삭제할 권한이 없습니다.");
+            throw new CustomException(UniformErrorCode.UNIFORM_NOT_AUTHORITY);
+        }
+
+        // 재고 삭제
+        stockRepository.delete(stock);
+
+        // 로그 출력
+        log.info("[StockService] 재고 삭제 완료: stockId= {}", stock.getStockId());
+    }
 }
