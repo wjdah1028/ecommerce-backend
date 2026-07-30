@@ -75,4 +75,20 @@ public class StockController {
         // 응답 반환
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "재고 수정 성공", response));
     }
+
+    // 재고 삭제
+    @Operation(summary = "재고 삭제 API", description = "판매자가 등록한 유니폼 재고를 삭제하는 API")
+    @DeleteMapping("/{uniform-id}/stocks/{stock-id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<BaseResponse<Void>> deleteStock(
+            @PathVariable("stock-id") Long stockId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("uniform-id") Long uniformId) {
+
+        // service 호출
+        stockService.deleteStock(stockId, userDetails.getUserId(), uniformId);
+
+        // 응답 반환
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(200, "재고 삭제 성공", null));
+    }
 }
