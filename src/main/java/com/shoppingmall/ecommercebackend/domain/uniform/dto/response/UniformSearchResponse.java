@@ -1,7 +1,10 @@
 package com.shoppingmall.ecommercebackend.domain.uniform.dto.response;
 
+import com.shoppingmall.ecommercebackend.domain.stock.dto.response.StockSizeResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,4 +34,7 @@ public class UniformSearchResponse {
 
     @Schema(description = "구단 이름", example = "맨체스터 유나이티드 FC")
     private String clubName;
+
+    @Schema(description = "재고 상태")
+    private List<StockSizeResponse> stockSoldOut;
 }
